@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full w-full overflow-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The DOLL Archive - Colección y Catálogo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.75)',
+                        'glass-border': 'rgba(255, 255, 255, 0.9)',
+                        accent: {
+                            blue: '#2563eb',
+                            indigo: '#4f46e5',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b',
+                            brown: '#78350f'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float-glow': 'floatGlow 10s ease-in-out infinite',
+                        'spin-slow': 'spin 30s linear infinite',
+                    },
+                    keyframes: {
+                        floatGlow: {
+                            '0%, 100%': { transform: 'translate(0px, 0px) scale(1)', opacity: '0.7' },
+                            '50%': { transform: 'translate(15px, -20px) scale(1.1)', opacity: '0.9' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/marykate');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #0f172a;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            background-image: url('https://i.pinimg.com/736x/2b/06/55/2b0655d5cb270e54e1c45e345c9c02c2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .font-marykate {
+            font-family: 'Marykate', cursive, sans-serif;
+        }
+
+        /* Glassmorphism Light Dock & Cards */
+        .glass-dock {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 25px 50px -12px rgba(148, 163, 184, 0.35), 0 0 20px rgba(255, 255, 255, 0.8) inset;
+        }
+
+        .glass-badge {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.12);
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            background-color: #78350f;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #fbcfe8;
+        }
+
+        /* Hide scrollbars */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-full w-full flex items-center justify-center overflow-hidden m-0 p-0">
+
+    <!-- Capa superpuesta semitransparente para legibilidad -->
+    <div class="absolute inset-0 bg-slate-900/25 backdrop-blur-[2px] pointer-events-none"></div>
+
+    <!-- Pantalla Completa sin bordes externos -->
+    <div class="relative w-full h-full overflow-hidden flex flex-col justify-between box-border">
+
+        <!-- 🌐 BARRA SUPERIOR -->
+        <div class="relative z-20 w-full bg-slate-200/80 backdrop-blur-md px-4 sm:px-6 pt-3.5 pb-2 flex items-center justify-between border-b border-slate-300/80 shrink-0">
+            
+            <!-- Izquierda: Botón de Regreso Dinámico + Botón Cookies -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button type="button" onclick="goBackView()" class="cursor-pointer text-slate-700 hover:text-slate-900 flex items-center justify-center w-8 h-8 rounded-lg bg-white/60 hover:bg-white/90 border border-slate-300/60 shadow-sm transition-all active:scale-95" title="Regresar">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="openCookieSettingsModal(event)" class="cursor-pointer text-[11px] font-bold text-amber-900 hover:text-amber-950 flex items-center gap-1 py-1 px-2 rounded-lg bg-white/60 hover:bg-white/90 border border-amber-900/20 shadow-sm transition-all active:scale-95">
+                    <i data-lucide="cookie" class="w-3.5 h-3.5 text-amber-900"></i>
+                    <span class="hidden sm:inline">Cookies</span>
+                </button>
+            </div>
+
+            <!-- Centro: Pestaña título -->
+            <div id="tab-container" class="flex items-center justify-center gap-2 px-4 sm:px-8 py-2 rounded-t-2xl border-t-2 border-x-2 border-slate-300/90 shadow-md mx-auto" style="background-color: #fff6ea;">
+                <span class="text-xs sm:text-base font-bold font-marykate text-slate-800 tracking-wide">↣ The DOLL Archive ↢</span>
+            </div>
+
+            <!-- Derecha: Botón Inicio (Logotipo) + Reloj -->
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="goHome()" class="cursor-pointer w-18 h-10 rounded-full bg-white/80 hover:bg-white border border-slate-300/80 shadow-sm flex items-center justify-center p-1 transition-all active:scale-95 overflow-hidden" title="Ir a Inicio">
+                    <img src="Agregar_algo_de_texto-removebg-preview_2.png" alt="Inicio" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://i.imgur.com/DF3SwxJ.png';">
+                </button>
+                <span id="mobile-clock" class="font-mono text-slate-700 font-bold text-xs sm:text-sm px-2.5 py-1 rounded-full glass-badge hidden sm:inline-block">00:00</span>
+            </div>
+        </div>
+
+        <!-- CENTER AREA -->
+        <main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 text-center overflow-y-auto no-scrollbar my-auto py-4">
+            
+            <!-- 1. DEFAULT VIEW -->
+            <div id="default-view" class="relative group flex flex-col items-center justify-center cursor-pointer transition-all duration-500 my-auto scale-110 sm:scale-125" onclick="showDollCarouselView()">
+                <div class="absolute -inset-8 bg-gradient-to-r from-pink-300/40 via-amber-200/40 to-rose-300/35 rounded-full blur-3xl opacity-90 group-hover:opacity-100 transition duration-500"></div>
+               
+                <!-- Logo Wrapper -->
+                <div id="logo-wrapper" class="relative w-[54vh] h-[14vh] min-w-[300px] min-h-[300px] max-w-[700px] max-h-[700px] flex items-center justify-center transition-all duration-500 group-hover:scale-105">
+                    <div id="logo-content" class="w-full h-full flex flex-col items-center justify-center relative">
+                        <div class="w-full h-full flex items-center justify-center relative">
+                            <img 
+                                id="main-logo-img"
+                                src="Agregar_algo_de_texto-removebg-preview_2.png" 
+                                alt="Logo Marco Vintage Folder" 
+                                class="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-300"
+                                onerror="this.onerror=null; this.src='https://i.imgur.com/VTqVYvV.png';"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 sm:mt-6 space-y-1.5">
+                    <h1 id="brand-title" class="text-2xl sm:text-4xl font-extrabold font-display tracking-wider text-white drop-shadow-lg">
+                        The<span class="text-rose-400">DOLL</span>Archive
+                    </h1>
+                    <p style="color: rgb(48,4,4);" class="text-xs sm:text-sm font-bold tracking-wide drop-shadow-sm max-w-[420px] mx-auto bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm">
+                        Tu biblioteca de confianza para muñecas y sus accesorios
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. SEARCH RESULT VIEW: CAROUSEL -->
+            <div id="carousel-view" class="hidden w-full max-w-[260px] flex flex-col items-center animate-fadeIn transition-all duration-500 my-auto">
+                
+                <div class="relative w-full glass-badge rounded-2xl p-3 border-2 border-white shadow-xl flex flex-col items-center">
+                    
+                    <!-- Contenedor con proporción estricta 370 x 660 -->
+                    <div class="relative w-full rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shadow-inner group" style="aspect-ratio: 370 / 660; max-height: 380px;">
+                        <div class="w-full h-full rounded-xl overflow-hidden relative">
+                            <img id="carousel-img" src="" alt="Artículo Muñeca" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
+
+                        <!-- Contenedor dinámico para los puntos interactivos -->
+                        <div id="interactive-pins-container" class="absolute inset-0 z-30 pointer-events-none"></div>
+
+                        <!-- Botones Carrusel -->
+                        <button onclick="prevSlide()" class="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 backdrop-blur-md text-slate-700 flex items-center justify-center shadow-md hover:bg-white active:scale-95 transition-all z-20">
+                            <i data-lucide="chevron-left" class="w-3.5 h-3.5 text-amber-900"></i>
+                        </button>
+                        
+                        <button onclick="nextSlide()" class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 backdrop-blur-md text-slate-700 flex items-center justify-center shadow-md hover:bg-white active:scale-95 transition-all z-20">
+                            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-amber-900"></i>
+                        </button>
+
+                        <div class="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/70 backdrop-blur-md text-white text-[9px] font-mono font-semibold z-20">
+                            <span id="current-slide-num">1</span>/3
+                        </div>
+                    </div>
+
+                    <!-- Información inferior -->
+                    <div class="w-full mt-2.5 space-y-1.5 text-left relative z-10">
+                        <div class="bg-white/90 border border-slate-200/90 rounded-lg px-3 py-1.5 shadow-sm flex items-center justify-between">
+                            <span class="text-[9px] font-mono text-slate-400 uppercase font-bold">Nombre</span>
+                            <span id="info-title" class="text-[11px] sm:text-xs font-bold text-slate-800 font-display">Nombre de Muñeca</span>
+                        </div>
+
+                        <div class="bg-white/90 border border-slate-200/90 rounded-lg px-3 py-1.5 shadow-sm">
+                            <span class="text-[8px] font-mono text-slate-400 uppercase font-bold block">Lanzamiento</span>
+                            <span id="info-desc" class="text-[10px] text-slate-600 font-medium leading-tight line-clamp-1">Detalles de diseño y acabados de la pieza.</span>
+                        </div>
+
+                        <div class="bg-white/90 border border-slate-200/90 rounded-lg px-3 py-1.5 shadow-sm flex items-center justify-between">
+                            <span class="text-[9px] font-mono text-slate-400 uppercase font-bold">Precio</span>
+                            <span id="info-price" class="text-[11px] sm:text-xs font-extrabold text-amber-900 font-mono">$0.00 MXN</span>
+                        </div>
+
+                        <div class="bg-white/90 border border-slate-200/90 rounded-lg px-3 py-1.5 shadow-sm flex items-center justify-between">
+                            <span class="text-[9px] font-mono text-slate-400 uppercase font-bold">Fecha</span>
+                            <span id="info-date" class="text-[11px] sm:text-xs font-extrabold text-amber-900 font-mono">00-00-0000</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- 3. ACCESSORY DETAIL VIEW -->
+            <div id="detail-view" class="hidden w-full max-w-[300px] flex flex-col items-center animate-fadeIn transition-all duration-500 my-auto">
+                <div class="relative w-full glass-badge rounded-2xl p-4 border-2 border-white shadow-xl flex flex-col items-center space-y-3">
+                    <h3 class="text-sm font-bold font-display text-slate-800 border-b border-slate-200 pb-2 w-full text-center">Información del Accesorio</h3>
+                    
+                    <div class="w-28 h-28 rounded-xl overflow-hidden border-2 border-white shadow-md">
+                        <img id="detail-img" src="" alt="Accesorio" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="w-full space-y-2 text-left text-xs">
+                        <div class="bg-white/90 p-2 rounded-lg border border-slate-200">
+                            <span class="text-[9px] font-mono text-slate-400 uppercase font-bold block">Nombre del Accesorio</span>
+                            <span id="detail-pin-title" class="font-bold text-slate-800">Accesorio</span>
+                        </div>
+                        <div class="bg-white/90 p-2 rounded-lg border border-slate-200">
+                            <span class="text-[9px] font-mono text-slate-400 uppercase font-bold block">Descripción / Detalles</span>
+                            <span id="detail-pin-subtitle" class="text-slate-600">Detalles</span>
+                        </div>
+                        <div class="bg-white/90 p-2 rounded-lg border border-slate-200">
+                            <span class="text-[9px] font-mono text-slate-400 uppercase font-bold block">Muñeca Asociada</span>
+                            <span id="detail-doll-title" class="font-bold text-amber-900">Muñeca</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM AREA: Search Dock -->
+        <footer class="relative z-10 w-full px-6 pb-8 pt-2 shrink-0">
+            <div class="glass-dock rounded-3xl p-3.5 sm:p-4 border-2 border-white/90 shadow-2xl max-w-md mx-auto">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1.5 mb-1.5 text-xs">
+                    <button class="tag-btn flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200/90 bg-white/80 text-slate-700 font-bold hover:bg-white transition-all whitespace-nowrap active:scale-95 shadow-sm">
+                        <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-900"></i>
+                        <span>Archivos</span>
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <form onsubmit="handleSearch(event)" class="flex items-center gap-2.5 bg-white/90 rounded-2xl p-1 border border-slate-200/90 shadow-inner">
+                        <div class="pl-2.5 text-amber-900/60">
+                            <i data-lucide="search" class="w-4 h-4 text-amber-900"></i>
+                        </div>
+
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            autocomplete="off"
+                            placeholder="Buscar o ingresar comando (ej. Muñeca)..." 
+                            class="w-full bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none text-xs sm:text-sm font-semibold py-1.5"
+                            oninput="onSearchInput(this.value)"
+                        />
+
+                        <button type="submit" class="bg-gradient-to-r from-pink-400 to-pink-300 hover:from-amber-900 hover:to-amber-950 text-white font-bold p-2.5 rounded-xl transition-all flex items-center justify-center shadow-md shadow-amber-900/20 active:scale-95">
+                            <i data-lucide="arrow-right" class="w-4 h-4 text-white"></i>
+                        </button>
+                    </form>
+
+                    <div id="search-results" class="hidden absolute left-0 right-0 bottom-full mb-3 glass-dock rounded-2xl p-3 max-h-48 overflow-y-auto border border-white shadow-2xl">
+                        <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest px-2 py-1 font-bold">Coincidencias rápidas</div>
+                        <div id="results-list" class="space-y-1.5 mt-1"></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- BANNER INICIAL DE COOKIES -->
+        <div id="cookie-banner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-40 transition-all duration-500 transform translate-y-0">
+            <div class="glass-dock rounded-2xl p-5 border-2 border-white shadow-2xl backdrop-blur-xl relative">
+                <div class="flex items-start gap-3">
+                    <div class="p-2.5 bg-amber-100/80 rounded-xl text-amber-900 shrink-0">
+                        <i data-lucide="cookie" class="w-5 h-5"></i>
+                    </div>
+                    <div class="space-y-1 pr-2">
+                        <h3 class="text-sm font-bold font-display text-slate-800">
+                            Preferencias de Cookies
+                        </h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">
+                            Ajusta el uso de cookies para personalizar tu experiencia en el archivo. Puedes aceptar todas o configurarlas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/60">
+                    <button type="button" onclick="acceptAllCookies()" class="flex-1 bg-gradient-to-r from-amber-900 to-amber-950 hover:from-amber-800 hover:to-amber-900 text-white font-bold py-2 px-3 rounded-xl text-xs transition-all shadow-md active:scale-95 text-center">
+                        Aceptar Todas
+                    </button>
+                    <button type="button" onclick="rejectOptionalCookies()" class="flex-1 bg-white/80 hover:bg-white text-slate-700 font-bold py-2 px-3 rounded-xl text-xs border border-slate-200 transition-all active:scale-95 text-center">
+                        Negar Opcionales
+                    </button>
+                    <button type="button" onclick="openCookieSettingsModal(event)" class="w-full sm:w-auto bg-pink-100/80 hover:bg-pink-100 text-amber-950 font-bold py-2 px-3 rounded-xl text-xs border border-pink-200/80 transition-all active:scale-95 text-center">
+                        Ajustar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE CONFIGURACIÓN DE COOKIES -->
+        <div id="cookie-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md transition-all duration-300">
+            <div class="glass-dock rounded-3xl p-6 border-2 border-white shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col justify-between animate-fadeIn relative z-50">
+                
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200/80">
+                    <div class="flex items-center gap-2.5">
+                        <div class="p-2 bg-pink-100/80 rounded-xl text-amber-900">
+                            <i data-lucide="cookie" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold font-display text-slate-800">Ajustes de Privacidad & Cookies</h2>
+                            <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">Configuración Personalizada</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeCookieModal()" class="p-1.5 rounded-full hover:bg-slate-200/80 text-slate-600 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="my-4 space-y-3 overflow-y-auto no-scrollbar pr-1 max-h-[50vh]">
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Selecciona qué cookies deseas permitir. Las cookies necesarias garantizan la operatividad esencial del catálogo.
+                    </p>
+
+                    <!-- Necesarias -->
+                    <div class="bg-white/90 rounded-2xl p-3.5 border border-slate-200/80 flex items-start justify-between gap-3 shadow-sm">
+                        <div class="space-y-0.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-slate-800">Cookies Técnicas (Esenciales)</span>
+                                <span class="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">Obligatorias</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-snug">
+                                Indispensables para la navegación, seguridad y renderizado. No se pueden desactivar.
+                            </p>
+                        </div>
+                        <div class="relative inline-block w-10 shrink-0 align-middle select-none transition duration-200 ease-in mt-1">
+                            <input type="checkbox" checked disabled class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-2 border-white appearance-none cursor-not-allowed right-0"/>
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-not-allowed"></label>
+                        </div>
+                    </div>
+
+                    <!-- Analíticas -->
+                    <div class="bg-white/90 rounded-2xl p-3.5 border border-slate-200/80 flex items-start justify-between gap-3 shadow-sm">
+                        <div class="space-y-0.5">
+                            <span class="text-xs font-bold text-slate-800">Cookies de Análisis y Métricas</span>
+                            <p class="text-[11px] text-slate-500 leading-snug">
+                                Nos ayudan a medir el rendimiento de búsqueda y el uso de las fichas de colección.
+                            </p>
+                        </div>
+                        <label class="relative inline-block w-10 shrink-0 align-middle select-none transition duration-200 ease-in cursor-pointer mt-1">
+                            <input type="checkbox" id="cookie-analytics" class="sr-only peer">
+                            <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-900"></div>
+                        </label>
+                    </div>
+
+                    <!-- Personalización -->
+                    <div class="bg-white/90 rounded-2xl p-3.5 border border-slate-200/80 flex items-start justify-between gap-3 shadow-sm">
+                        <div class="space-y-0.5">
+                            <span class="text-xs font-bold text-slate-800">Cookies de Personalización</span>
+                            <p class="text-[11px] text-slate-500 leading-snug">
+                                Permiten guardar preferencias de visualización y recordatorios de artículos guardados.
+                            </p>
+                        </div>
+                        <label class="relative inline-block w-10 shrink-0 align-middle select-none transition duration-200 ease-in cursor-pointer mt-1">
+                            <input type="checkbox" id="cookie-marketing" class="sr-only peer">
+                            <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-900"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-200/80 flex items-center justify-between gap-2">
+                    <button type="button" onclick="rejectOptionalCookies()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition-all active:scale-95 text-center">
+                        Denegar Opcionales
+                    </button>
+                    <button type="button" onclick="saveCustomCookies()" class="flex-1 bg-gradient-to-r from-pink-400 to-pink-300 hover:from-amber-900 hover:to-amber-950 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md active:scale-95 text-center">
+                        Guardar Selección
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="absolute top-4 left-1/2 -translate-x-1/2 z-50 -translate-y-20 transition-all duration-300 glass-badge border-amber-300 text-slate-800 px-4 py-2 rounded-full flex items-center gap-2.5 shadow-xl text-xs sm:text-sm font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-800"></span>
+            <span id="toast-msg">Notificación</span>
+        </div>
+
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        function initIcons() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        // Reloj
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const clockEl = document.getElementById('mobile-clock');
+            if(clockEl) clockEl.textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Sistema de Navegación con Historial de Pestañas
+        let viewStack = ['default-view'];
+
+        function showView(targetViewId) {
+            const views = ['default-view', 'carousel-view', 'detail-view'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            const targetEl = document.getElementById(targetViewId);
+            if (targetEl) {
+                targetEl.classList.remove('hidden');
+            }
+
+            if (targetViewId === 'default-view') {
+                const logoImg = document.getElementById('main-logo-img');
+                if (logoImg && !logoImg.src) {
+                    logoImg.src = 'Agregar_algo_de_texto-removebg-preview_2.png';
+                }
+            }
+
+            initIcons();
+        }
+
+        function navigateTo(targetViewId) {
+            if (viewStack[viewStack.length - 1] !== targetViewId) {
+                viewStack.push(targetViewId);
+            }
+            showView(targetViewId);
+        }
+
+        function goHome() {
+            if (viewStack[viewStack.length - 1] !== 'default-view') {
+                viewStack.push('default-view');
+            }
+            showView('default-view');
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) searchInput.value = "";
+            document.getElementById('search-results').classList.add('hidden');
+            showToast("Pantalla de inicio");
+        }
+
+        function goBackView() {
+            if (viewStack.length > 1) {
+                viewStack.pop(); // Remueve la vista actual del tope
+                const previousView = viewStack[viewStack.length - 1];
+                showView(previousView);
+                showToast("Regresando a la pestaña anterior");
+            } else {
+                showToast("Ya estás en el inicio del historial");
+            }
+        }
+
+        /* =====================================================================
+           📍 BASE DE DATOS Y CONFIGURACIÓN DE PUNTOS INTERACTIVOS (EÁSIL MODIFICACIÓN)
+           ===================================================================== */
+        const dollsCarouselData = [
+            {
+                title: "Lagoona Blue",
+                desc: "Primera edición",
+                price: "$750 MXN",
+                date: "10-10-2010",
+                image: "https://i.imgur.com/w22pGC7.png",
+                
+                /* --- MODIFICA LOS PUNTOS DE LA MUÑECA 1 AQUÍ --- */
+                puntosInteractivos: [
+                    {
+                        posicion: { arriba: "25%", izquierda: "30%" }, // Posición en la imagen (top, left, bottom, right)
+                        orientacionWindow: "abajo",                   // 'abajo' u 'arriba'
+                        title: "Chamarra",
+                        subtitle: "Una pieza",
+                        img: "https://i.imgur.com/ZntuRbu.png"
+                    },
+                    {
+                        posicion: { abajo: "5%", izquierda: "50%", centradoX: true },
+                        orientacionWindow: "arriba",
+                        title: "Sandalías",
+                        subtitle: "Dos piezas",
+                        img: "https://i.imgur.com/Lun12QJ.png"
+                    }
+                ]
+            },
+            {
+                title: "Draculaura",
+                desc: "Primera edición",
+                price: "$750 MXN",
+                date: "10-10-2010",
+                image: "https://i.imgur.com/F5iBVEX.pngp",
+                
+                /* --- MODIFICA LOS PUNTOS DE LA MUÑECA 2 AQUÍ --- */
+                puntosInteractivos: [
+                    {
+                        posicion: { abajo: "20%", derecha: "15%" },
+                        orientacionWindow: "abajo",
+                        title: "Sombrilla",
+                        subtitle: "Una pieza",
+                        img: "https://i.imgur.com/aPcoB6d.png"
+                    },
+                    {
+                        posicion: { arriba: "15%", izquierda: "25%" },
+                        orientacionWindow: "arriba",
+                        title: "Conde Fabuloso",
+                        subtitle: "Mascota",
+                        img: "https://i.imgur.com/rl9xsHw.png"
+                    }
+                ]
+            },
+            {
+                title: "Frankie Stein",
+                desc: "Primera edición",
+                price: "$750 MXN",
+                date: "10-10-2010",
+                image: "https://i.imgur.com/BIPhWmS.png",
+                
+                /* --- MODIFICA LOS PUNTOS DE LA MUÑECA 3 AQUÍ --- */
+                puntosInteractivos: [
+                    {
+                        posicion: { arriba: "10%", derecha: "50%" },
+                        orientacionWindow: "abajo",
+                        title: "Aretes",
+                        subtitle: "Dos piezas",
+                        img: "https://i.imgur.com/mIednJg.png"
+                    },
+                    {
+                        posicion: { arriba: "35%", derecha: "20%" },
+                        orientacionWindow: "arriba",
+                        title: "Bolso",
+                        subtitle: "Una pieza",
+                        img: "https://i.imgur.com/XB1S8fN.png"
+                    }
+                ]
+            }
+        ];
+
+        let currentDollIndex = 0;
+
+        function updateCarouselDisplay() {
+            const item = dollsCarouselData[currentDollIndex];
+            document.getElementById('carousel-img').src = item.image;
+            document.getElementById('info-title').textContent = item.title;
+            document.getElementById('info-desc').textContent = item.desc;
+            document.getElementById('info-price').textContent = item.price;
+            document.getElementById('info-date').textContent = item.date;
+            document.getElementById('current-slide-num').textContent = currentDollIndex + 1;
+
+            const pinsContainer = document.getElementById('interactive-pins-container');
+            pinsContainer.innerHTML = item.puntosInteractivos.map((pin, pinIdx) => {
+                // Generador automático de estilos de posición
+                let posStyle = '';
+                if (pin.posicion.arriba) posStyle += `top: ${pin.posicion.arriba}; `;
+                if (pin.posicion.abajo) posStyle += `bottom: ${pin.posicion.abajo}; `;
+                if (pin.posicion.izquierda) posStyle += `left: ${pin.posicion.izquierda}; `;
+                if (pin.posicion.derecha) posStyle += `right: ${pin.posicion.derecha}; `;
+                if (pin.posicion.centradoX) posStyle += `transform: -translate-x-1/2; `;
+
+                // Determinar orientación de la ventana emergente
+                const popupAlign = pin.orientacionWindow === 'abajo' ? 'top-full mt-2' : 'bottom-full mb-2';
+
+                return `
+                    <div id="pin-wrapper-${pinIdx}" class="absolute z-40 cursor-pointer pointer-events-auto" style="${posStyle}" onmouseenter="showPopup(${pinIdx})" onmouseleave="hidePopup(${pinIdx})">
+                        <div class="w-4 h-4 rounded-full bg-amber-800/90 border-2 border-white shadow-md flex items-center justify-center animate-pulse">
+                            <div class="w-1 h-1 rounded-full bg-white"></div>
+                        </div>
+                        
+                        <div id="popup-${pinIdx}" class="absolute ${popupAlign} left-1/2 -translate-x-1/2 w-44 p-2 rounded-xl bg-white/95 backdrop-blur-md border border-white shadow-2xl opacity-0 translate-y-2 pointer-events-none transition-all duration-300 ease-out flex items-center gap-2 text-left z-50">
+                            <img src="${pin.img}" alt="Detalle" class="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[10px] font-bold text-slate-800 truncate">${pin.title}</p>
+                                <p class="text-[8px] text-slate-500 truncate">${pin.subtitle}</p>
+                            </div>
+                            <button type="button" onclick="openAccessoryDetail('${pin.img}', '${pin.title}', '${pin.subtitle}', '${item.title}')" class="p-1 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-md shrink-0 cursor-pointer transition-colors" title="Ver detalles">
+                                <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            initIcons();
+        }
+
+        let popupTimers = {};
+
+        function showPopup(pinIdx) {
+            clearTimeout(popupTimers[pinIdx]);
+            const popup = document.getElementById(`popup-${pinIdx}`);
+            if (popup) {
+                popup.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+                popup.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            }
+        }
+
+        function hidePopup(pinIdx) {
+            popupTimers[pinIdx] = setTimeout(() => {
+                const popup = document.getElementById(`popup-${pinIdx}`);
+                if (popup) {
+                    popup.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+                    popup.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+                }
+            }, 200);
+        }
+
+        function openAccessoryDetail(img, title, subtitle, dollName) {
+            document.getElementById('detail-img').src = img;
+            document.getElementById('detail-pin-title').textContent = title;
+            document.getElementById('detail-pin-subtitle').textContent = subtitle;
+            document.getElementById('detail-doll-title').textContent = dollName;
+            navigateTo('detail-view');
+            showToast("Apartado de accesorio abierto");
+        }
+
+        function nextSlide() {
+            currentDollIndex = (currentDollIndex + 1) % dollsCarouselData.length;
+            updateCarouselDisplay();
+        }
+
+        function prevSlide() {
+            currentDollIndex = (currentDollIndex - 1 + dollsCarouselData.length) % dollsCarouselData.length;
+            updateCarouselDisplay();
+        }
+
+        function showDollCarouselView() {
+            currentDollIndex = 0;
+            navigateTo('carousel-view');
+            updateCarouselDisplay();
+            showToast("Carrusel de Muñecas abierto");
+        }
+
+        // Búsqueda Mock
+        const mockDatabase = [{ name: 'Muñeca', category: 'archivos', icon: 'heart' }];
+
+        function onSearchInput(val) {
+            const resultsPanel = document.getElementById('search-results');
+            const resultsList = document.getElementById('results-list');
+
+            if (!val.trim()) {
+                resultsPanel.classList.add('hidden');
+                return;
+            }
+
+            const filtered = mockDatabase.filter(item => 
+                item.name.toLowerCase().includes(val.toLowerCase())
+            );
+
+            if (filtered.length > 0) {
+                resultsList.innerHTML = filtered.map(item => `
+                    <div onclick="selectSearch('${item.name}')" class="flex items-center justify-between p-2 rounded-xl hover:bg-amber-50/90 cursor-pointer transition-colors text-xs">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="${item.icon}" class="w-4 h-4 text-amber-900"></i>
+                            <span class="text-slate-800 font-semibold">${item.name}</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold">#${item.category}</span>
+                    </div>
+                `).join('');
+                initIcons();
+                resultsPanel.classList.remove('hidden');
+            } else {
+                resultsList.innerHTML = `<div class="text-xs text-slate-400 p-2 text-center font-medium">Sin resultados</div>`;
+                resultsPanel.classList.remove('hidden');
+            }
+        }
+
+        function handleSearch(e) {
+            e.preventDefault();
+            const val = document.getElementById('search-input').value.trim();
+            document.getElementById('search-results').classList.add('hidden');
+            
+            if(val.toLowerCase() === 'muñeca') {
+                showDollCarouselView();
+            } else if(val) {
+                showToast(`Buscando "${val}"`);
+            }
+        }
+
+        function selectSearch(name) {
+            document.getElementById('search-input').value = name;
+            document.getElementById('search-results').classList.add('hidden');
+            
+            if(name.toLowerCase() === 'muñeca') {
+                showDollCarouselView();
+            } else {
+                showToast(`Navegando: ${name}`);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('-translate-y-20');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-20');
+            }, 2500);
+        }
+
+        /* --- COOKIES --- */
+        const COOKIE_STORAGE_KEY = 'doll_archive_cookie_consent';
+
+        function checkCookieConsent() {
+            const consent = localStorage.getItem(COOKIE_STORAGE_KEY);
+            if (!consent) {
+                setTimeout(() => {
+                    const banner = document.getElementById('cookie-banner');
+                    if(banner) banner.classList.remove('hidden');
+                }, 400);
+            } else {
+                syncCookieToggles();
+            }
+        }
+
+        function syncCookieToggles() {
+            const consent = localStorage.getItem(COOKIE_STORAGE_KEY);
+            if (consent) {
+                try {
+                    const parsed = JSON.parse(consent);
+                    const elAnalytics = document.getElementById('cookie-analytics');
+                    const elMarketing = document.getElementById('cookie-marketing');
+                    if (elAnalytics) elAnalytics.checked = !!parsed.analytics;
+                    if (elMarketing) elMarketing.checked = !!parsed.marketing;
+                } catch(e) {}
+            }
+        }
+
+        function acceptAllCookies() {
+            const consentData = { necessary: true, analytics: true, marketing: true, timestamp: new Date().toISOString() };
+            localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify(consentData));
+            syncCookieToggles();
+            closeCookieBanner();
+            closeCookieModal();
+            showToast("Todas las cookies han sido aceptadas");
+        }
+
+        function rejectOptionalCookies() {
+            const consentData = { necessary: true, analytics: false, marketing: false, timestamp: new Date().toISOString() };
+            localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify(consentData));
+            syncCookieToggles();
+            closeCookieBanner();
+            closeCookieModal();
+            showToast("Cookies opcionales denegadas");
+        }
+
+        function openCookieSettingsModal(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            syncCookieToggles();
+            document.getElementById('cookie-modal').classList.remove('hidden');
+        }
+
+        function closeCookieModal() {
+            document.getElementById('cookie-modal').classList.add('hidden');
+        }
+
+        function closeCookieBanner() {
+            const banner = document.getElementById('cookie-banner');
+            if(banner) {
+                banner.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    banner.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function saveCustomCookies() {
+            const analytics = document.getElementById('cookie-analytics').checked;
+            const marketing = document.getElementById('cookie-marketing').checked;
+
+            const consentData = {
+                necessary: true,
+                analytics: analytics,
+                marketing: marketing,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify(consentData));
+            closeCookieModal();
+            closeCookieBanner();
+            showToast("Ajustes de cookies guardados");
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initIcons();
+            checkCookieConsent();
+        });
+    </script>
+</body>
+</html>
